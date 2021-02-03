@@ -84,7 +84,7 @@ Response will be something like:
 }
 ```
 
-You've successully notarized your first data!
+You've successully notarized your first data! You can always share the PoE by using the `data explorer` here: https://proof.scryptachain.org/#/uuid/8d4e9ca5.8b7a.41d1.8010.738d8b371fb5
 
 ## [GET] /data/:hash
 
