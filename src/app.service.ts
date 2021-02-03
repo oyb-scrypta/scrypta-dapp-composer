@@ -108,7 +108,7 @@ export class AppService {
          * https://scrypta.wiki/en/#/core/addresses-management#fundaddressprivatekey-to-amount
          */
         canWrite = await scrypta.fundAddress(master.prv, identity.pub, 0.001)
-        await scrypta.sleep(500)
+        await scrypta.sleep(1500)
 
       }
 
