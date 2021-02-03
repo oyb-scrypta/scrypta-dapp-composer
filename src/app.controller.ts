@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Request } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -10,27 +10,40 @@ export class AppController {
     return this.appService.getIdanodeStatus();
   }
 
-  @Post('post')
-  async postRequest(@Body() request): Promise<Object> {
-    if(request.endpoint !== undefined){
-      return await this.appService.postRequest(request)
+  @Get('identity/:hash')
+  async getIdentity(@Request() request): Promise<Object> {
+    if(request.params.hash !== undefined && request.params.hash.length === 64){
+      return await this.appService.getIdentity(request.params.hash)
     }else{
       return JSON.stringify({
         error: true,
-        message: "Endpoint not defined"
+        message: "*hash* is required."
       })
     }
   }
 
-  @Post('get')
-  async getRequest(@Body() request): Promise<Object> {
-    if(request.endpoint !== undefined){
-      return await this.appService.getRequest(request)
+  @Get('data/:hash')
+  async returnData(@Request() request): Promise<Object> {
+    if(request.params.hash !== undefined && request.params.hash.length === 64){
+      return await this.appService.returnData(request.params.hash)
     }else{
       return JSON.stringify({
         error: true,
-        message: "Endpoint not defined"
+        message: "*hash* is required."
       })
     }
   }
+
+  @Post('notarize')
+  async notarizeData(@Body() request): Promise<Object> {
+    if(request.hash !== undefined && request.data !== undefined){
+      return await this.appService.notarizeData(request.hash, request.data)
+    }else{
+      return JSON.stringify({
+        error: true,
+        message: "*hash* and *data* are required."
+      })
+    }
+  }
+
 }
