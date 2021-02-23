@@ -73,6 +73,7 @@ export class AppService {
       return { message: "Service errored, retry.", error: true }
     }
   }
+
   async notarizeData(hash, data): Promise<any> {
     const scrypta = new ScryptaCore
     scrypta.debug = true
@@ -133,6 +134,137 @@ export class AppService {
          * https://scrypta.wiki/en/#/core/pdm#writepassword-metadata-collection---refid---protocol---key---uuid--
          */
         return await scrypta.write(temporaryKey.walletstore, '-', data)
+      } else {
+        return { message: "This address can't write right now, seems master address can't fund it.", master: master.pub, error: true }
+      }
+
+    } catch (e) {
+      console.log(e)
+      return { message: "Service errored, retry.", error: true }
+    }
+  }
+
+  async updateData(hash, data, uuid): Promise<any> {
+    const scrypta = new ScryptaCore
+    scrypta.debug = true
+
+    try {
+
+      let canWrite = true
+
+      /**
+       * Returning identity using previous method.
+       */
+      const identity = await this.getIdentity(hash)
+
+      /**
+       * Returning address balance using get endpoint:
+       * https://scrypta.wiki/en/#/idanode/block-explorer#get-balanceaddress
+       */
+      const balance = await scrypta.get('/balance/' + identity.pub)
+
+      /**
+       * Checking if balance is enough, if not funding balance with master key.
+       */
+      if (balance.balance < 0.001) {
+
+        /**
+         * Deriving key with Core method:
+         * https://scrypta.wiki/en/#/core/advanced-management#derivekeyfrommnemonic-menmonic-index
+         */
+        var master = await scrypta.deriveKeyFromMnemonic(process.env.MAIN_WALLET, 'm/0')
+
+        /**
+         * Funding address using Core method:
+         * https://scrypta.wiki/en/#/core/addresses-management#fundaddressprivatekey-to-amount
+         */
+        canWrite = await scrypta.fundAddress(master.prv, identity.pub, 0.001)
+        await scrypta.sleep(1500)
+
+      }
+
+      if (canWrite) {
+        /**
+         * Importing private key because we always need encrypted wallets by default:
+         * https://scrypta.wiki/en/#/core/addresses-management#importprivatekeykey-password
+         */
+        let temporaryKey = await scrypta.importPrivateKey(identity.prv, '-', false)
+
+        /**
+         * Checking if data can be stringified because we must pass a string into write method.
+         */
+        try {
+          data = JSON.stringify(data)
+        } catch (e) {
+          console.log('Data is a string.')
+        }
+
+        /**
+         * Finally update the data using Core method:
+         * https://scrypta.wiki/en/#/core/pdm#updatepassword-metadata-collection---refid---protocol---key---uuid
+         */
+        return await scrypta.update(temporaryKey.walletstore, '-', data, uuid)
+      } else {
+        return { message: "This address can't write right now, seems master address can't fund it.", master: master.pub, error: true }
+      }
+
+    } catch (e) {
+      console.log(e)
+      return { message: "Service errored, retry.", error: true }
+    }
+  }
+
+  async invalidateData(hash, uuid): Promise<any> {
+    const scrypta = new ScryptaCore
+    scrypta.debug = true
+
+    try {
+
+      let canWrite = true
+
+      /**
+       * Returning identity using previous method.
+       */
+      const identity = await this.getIdentity(hash)
+
+      /**
+       * Returning address balance using get endpoint:
+       * https://scrypta.wiki/en/#/idanode/block-explorer#get-balanceaddress
+       */
+      const balance = await scrypta.get('/balance/' + identity.pub)
+
+      /**
+       * Checking if balance is enough, if not funding balance with master key.
+       */
+      if (balance.balance < 0.001) {
+
+        /**
+         * Deriving key with Core method:
+         * https://scrypta.wiki/en/#/core/advanced-management#derivekeyfrommnemonic-menmonic-index
+         */
+        var master = await scrypta.deriveKeyFromMnemonic(process.env.MAIN_WALLET, 'm/0')
+
+        /**
+         * Funding address using Core method:
+         * https://scrypta.wiki/en/#/core/addresses-management#fundaddressprivatekey-to-amount
+         */
+        canWrite = await scrypta.fundAddress(master.prv, identity.pub, 0.001)
+        await scrypta.sleep(1500)
+
+      }
+
+      if (canWrite) {
+        /**
+         * Importing private key because we always need encrypted wallets by default:
+         * https://scrypta.wiki/en/#/core/addresses-management#importprivatekeykey-password
+         */
+        let temporaryKey = await scrypta.importPrivateKey(identity.prv, '-', false)
+
+        /**
+         * Finally invalidate the data using Core method:
+         * https://scrypta.wiki/en/#/core/pdm#invalidatepassword-key-----uuid
+         */
+        return await scrypta.invalidate(temporaryKey.walletstore, '-', uuid)
       } else {
         return { message: "This address can't write right now, seems master address can't fund it.", master: master.pub, error: true }
       }

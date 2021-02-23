@@ -46,4 +46,28 @@ export class AppController {
     }
   }
 
+  @Post('update')
+  async updateData(@Body() request): Promise<Object> {
+    if(request.hash !== undefined && request.uuid !== undefined && request.data !== undefined){
+      return await this.appService.updateData(request.hash, request.data, request.uuid)
+    }else{
+      return JSON.stringify({
+        error: true,
+        message: "*hash* and *data* are required."
+      })
+    }
+  }
+
+  @Post('update')
+  async invalidateData(@Body() request): Promise<Object> {
+    if(request.hash !== undefined && request.uuid !== undefined && request.data !== undefined){
+      return await this.appService.invalidateData(request.hash, request.uuid)
+    }else{
+      return JSON.stringify({
+        error: true,
+        message: "*hash* and *data* are required."
+      })
+    }
+  }
+
 }
