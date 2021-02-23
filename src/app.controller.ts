@@ -34,6 +34,18 @@ export class AppController {
     }
   }
 
+  @Get('history/:uuid')
+  async returnHistory(@Request() request): Promise<Object> {
+    if(request.params.uuid !== undefined){
+      return await this.appService.returnHistory(request.params.uuid)
+    }else{
+      return JSON.stringify({
+        error: true,
+        message: "*hash* is required."
+      })
+    }
+  }
+
   @Post('notarize')
   async notarizeData(@Body() request): Promise<Object> {
     if(request.hash !== undefined && request.data !== undefined){
@@ -58,9 +70,9 @@ export class AppController {
     }
   }
 
-  @Post('update')
+  @Post('invalidate')
   async invalidateData(@Body() request): Promise<Object> {
-    if(request.hash !== undefined && request.uuid !== undefined && request.data !== undefined){
+    if(request.hash !== undefined && request.uuid !== undefined){
       return await this.appService.invalidateData(request.hash, request.uuid)
     }else{
       return JSON.stringify({

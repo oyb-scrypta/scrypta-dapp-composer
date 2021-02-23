@@ -86,6 +86,22 @@ Response will be something like:
 
 You've successully notarized your first data! You can always share the PoE by using the `data explorer` here: https://proof.scryptachain.org/#/uuid/8d4e9ca5.8b7a.41d1.8010.738d8b371fb5
 
+## [POST] /update
+
+This endpoint will update the status of the specified data, you need to give these params: 
+
+- **hash**: the identifier of the user
+- **uuid**: the uuid you mean to update
+- **data**: a string or object containing your data, please note that objects will be automatically `stringified`.
+
+
+## [POST] /invalidate
+
+This endpoint will invalidate the data so it will be returned only in `history` endpoint, you need to give these params: 
+
+- **hash**: the identifier of the user
+- **uuid**: the uuid you mean to update
+
 ## [GET] /data/:hash
 
 This endpoint will return an array of all notarized data by specific address. So in this case it will return:
@@ -102,6 +118,59 @@ This endpoint will return an array of all notarized data by specific address. So
         "contract": "",
         "data": "hello world, again.",
         "txid": "e7ccf9f4735baeb255e5ec0cef86bc231df10369b82e2db53eb51433d3318706",
+        "block": null,
+        "is_file": false
+    }
+]
+```
+
+## [GET] /history/:uuid
+
+This endpoint will return the history of a single file if it was updated or invalidated. 
+An example can be: 
+
+```
+ [
+    {
+        "_id": "60349f46a83b443b6dcc50a6",
+        "address": "LbR8m1kkLSiiTDaEU8sHeeeh1jGbGho8uo",
+        "uuid": "7f801be6.b869.49b5.b423.77bbeb58610a",
+        "collection": "",
+        "refID": "",
+        "protocol": "",
+        "contract": "",
+        "data": "4e2f2049c0593ee3e38f3faac5cf3fe81dd5c8c2d87cc736a9d8badeb98fa2e8",
+        "block": 1130531,
+        "blockhash": "4e91b79dfc36305e703ba93d1f2b44b1feb332e1ba236c74fe064183279c734a",
+        "time": 1614061412,
+        "txid": "ee7ba25608b96450f3f8a3578212219f50ca0112c7dce89a304e5f1445628738",
+        "is_file": false
+    },
+    {
+        "_id": "6033a1a5a83b443b6dcc3a63",
+        "address": "LbR8m1kkLSiiTDaEU8sHeeeh1jGbGho8uo",
+        "uuid": "7f801be6.b869.49b5.b423.77bbeb58610a",
+        "collection": "",
+        "refID": "",
+        "protocol": "",
+        "contract": "",
+        "data": "7714ee9f877abd3ddd3bfe797ad14684b8b2c177",
+        "block": 1129460,
+        "blockhash": "6b3013399dea54f786d385f44afa8f42ff1fe8cb4af7e91ab88103d3afd0b81a",
+        "time": 1613996478,
+        "txid": "c6a9e963670e7e49cbeee926db1e00288154d632ca08f82928c666afff89e60b",
+        "is_file": false
+    },
+    {
+        "_id": "6033a138a83b443b6dcc3a4f",
+        "address": "LbR8m1kkLSiiTDaEU8sHeeeh1jGbGho8uo",
+        "uuid": "7f801be6.b869.49b5.b423.77bbeb58610a",
+        "collection": "",
+        "refID": "",
+        "protocol": "",
+        "contract": "",
+        "data": "7714ee9f877abd3ddd3bfe797ad14684b8b2c177",
+        "txid": "c6a9e963670e7e49cbeee926db1e00288154d632ca08f82928c666afff89e60b",
         "block": null,
         "is_file": false
     }

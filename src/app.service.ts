@@ -74,6 +74,31 @@ export class AppService {
     }
   }
 
+  async returnHistory(uuid): Promise<any> {
+    const scrypta = new ScryptaCore
+    scrypta.debug = true
+    scrypta.staticnodes = true
+
+    try {
+
+      /**
+       * Reading data from IdaNode using post endpoint:
+       * https://scrypta.wiki/en/#/idanode/pdm#post-read
+       */
+
+      const data = await scrypta.post('/read', { uuid: uuid, history: true })
+
+      if (data.data !== undefined) {
+        return data.data;
+      } else {
+        return { message: "IdANode errored, retry.", error: true }
+      }
+
+    } catch (e) {
+      return { message: "Service errored, retry.", error: true }
+    }
+  }
+
   async notarizeData(hash, data): Promise<any> {
     const scrypta = new ScryptaCore
     scrypta.debug = true
